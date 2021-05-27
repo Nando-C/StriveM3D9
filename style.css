@@ -1,0 +1,14 @@
+body {
+    background-color: whitesmoke;
+    color: rgb(129, 120, 120);
+}
+h1,h5 {
+    color: rgb(116, 105, 105);
+}
+.card {
+    border-radius: 5px;
+}
+.card-img-top {
+    height: 35vh;
+    object-fit: contain;
+}
