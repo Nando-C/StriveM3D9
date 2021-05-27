@@ -36,7 +36,13 @@
               <div class="container">
                 <div class="row justify-content-center">
                   <div class="col-md-6">
-                    <h1 class="mt-5 mb-4">Backoffice</h1>
+                    <h1 class="d-inline-block mt-5 mb-4">Backoffice</h1>
+                    <h3 id="subtitle" class="d-inline-block"></h3>
+
+                    <hr>
+
+                    <span id="alert"></span>
+
                     <form onsubmit="handleSubmit(event)" class="mb-5">
                       <div class="form-group">
                         <label for="name">Product Name</label>
@@ -58,7 +64,13 @@
                         <label for="price">Product Price</label>
                         <input id="price" type="number" class="form-control" aria-describedby="price">
                       </div>
-                      <input type="submit" class="btn btn-primary my-3" value="Submit">
+                      <button type="submit" class="btn btn-primary my-3">
+                        Submit Product
+                          <div id="spinner" class="spinner-border spinner-border-sm d-none" role="status">
+                            <span class="sr-only">Loading...</span>
+                          </div>
+                      </button>
+                      <!-- <input type="submit" class="btn btn-primary my-3" value="Submit"> -->
                     </form>
                   </div>
                 </div>
@@ -73,8 +85,51 @@
         const apiToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MGFlM2Y4MWNlYWY0ODAwMTVjOTE4NmEiLCJpYXQiOjE2MjIwMzIyNTcsImV4cCI6MTYyMzI0MTg1N30.COuaWwE7g5o-UfUez4tVCPw0zZc5llB7Jqgsp37LrSA'
         const apiUrl = "https://striveschool-api.herokuapp.com/api/product/"
 
+        const productId = new URLSearchParams(window.location.search).get("id")
+        // console.log(productId)
+
+        const endPoint = productId ? apiUrl + productId : apiUrl
+        const method = productId ? "PUT" : "POST"
+
+        window.onload = async () => {
+          if(productId) {
+            document.getElementById("subtitle").innerText = `  —  Edit Product Details`
+            try {
+              const response = await fetch(endPoint, {
+                headers: {
+                  "Authorization": `Bearer ${apiToken}`
+                }
+              })
+              const productDetails = await response.json()
+              populateForm(productDetails)
+            } catch (error) {
+              
+            }
+          } else {
+            document.getElementById("subtitle").innerText = `  —  Create Product`
+          }
+        }
+
+        const objModel = {
+          name: '',
+          description: '',
+          brand: '',
+          imageUrl: '',
+          price: ''
+        }
+
+        const populateForm = (obj = objModel) => {
+            document.getElementById('name').value = obj.name
+            document.getElementById('description').value = obj.description
+            document.getElementById('brand').value = obj.brand
+            document.getElementById('img-url').value = obj.imageUrl
+            document.getElementById('price').value = obj.price
+        }
+
         const handleSubmit = async (event) => {
           event.preventDefault()
+
+          isLoading(true)
 
           const product = {
             name: document.getElementById('name').value,
@@ -85,8 +140,8 @@
           }
 
           try {
-            const response = await fetch(apiUrl, {
-              method: "POST",
+            const response = await fetch(endPoint, {
+              method,
               body: JSON.stringify(product),
               headers: {
                 "Authorization": `Bearer ${apiToken}`,
@@ -94,32 +149,61 @@
               }
             })
             console.log(response)
+            if(response.ok) {
+              if(!productId) {
+                populateForm()
+              }
+              const data = await response.json()
+              showAlert ('success', `Product ${!productId ? "created successfuly" : ""} with an id of ${data._id} ${productId ? "edited successfully" : ""}`)
+            } else {
+              if (response.status === 400) {
+                  throw new Error('Bad request with status 400')
+              } else if (response.status === 401) {
+                  throw new Error('Unauthorized with status 401')
+              }  else if (response.status === 404) {
+                  throw new Error('Not found with status 404')
+              }
+            }
 
           } catch (err) {
-                console.log(err)
-
+              alert(err.message)
+            } finally {
+              isLoading(false)
             }
         }
         
+        const showAlert = (type, msg) => {
+          const alert = document.getElementById ('alert')
+          alert.innerHTML = `<div class="alert alert-${type}" role="alert">${msg}</div>`
 
-        window.onload = async () => {
-            const products = document.getElementById('products')
-
-            try {
-                const response = await fetch(apiUrl, {
-                    headers: {
-                        "Authorization": `Bearer ${apiToken}`
-                    }
-                })
-                console.log(response)
-                const products =  await response.json()
-                console.log(products)
-            } catch (err) {
-                console.log(err)
-
-            }
-
+          setTimeout(() => {alert.innerHTML = ''}, 5000) //erases the alert after 5 seconds
         }
+
+        const isLoading = (loading) => {
+          if (loading) {
+            document.getElementById('spinner').classList.remove('d-none')
+          } else {
+            document.getElementById('spinner').classList.add('d-none')
+          }
+        }
+        // window.onload = async () => {
+        //     const products = document.getElementById('products')
+
+        //     try {
+        //         const response = await fetch(apiUrl, {
+        //             headers: {
+        //                 "Authorization": `Bearer ${apiToken}`
+        //             }
+        //         })
+        //         console.log(response)
+        //         const products =  await response.json()
+        //         console.log(products)
+        //     } catch (err) {
+        //         console.log(err)
+
+        //     }
+
+        // }
 
     </script>
   </body>
