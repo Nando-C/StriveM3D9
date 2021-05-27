@@ -38,6 +38,11 @@
                 <div class="row justify-content-center">
                   <div class="col-md-10 col-lg-8">
                     <div id="product-details">
+                      <div class="d-flex justify-content-center">
+                        <div class="spinner-border text-success" role="status">
+                          <span class="sr-only">Loading...</span>
+                        </div>
+                      </div>
                       <!-- Product Details display -->
                     </div>
                     <button type="button" class="btn btn-success my-4" onclick="handleEdit()">EDIT DETAILS</button>
@@ -47,7 +52,7 @@
           </div>
 
       </main>
-<div></div>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
     <script>
@@ -79,16 +84,16 @@
                         <img src=${productData.imageUrl} class="img-fluid w-100" alt="...">
                       </li>
                       <li class="list-group-item d-flex">
-                        <strong class="pr-2">Name: </strong>${productData.name}
+                        <strong class="pr-1">Name: </strong>${productData.name}
                       </li>
                       <li class="list-group-item d-flex">
-                        <strong class="pr-2">Brand: </strong>${productData.brand}
+                        <strong class="pr-1">Brand: </strong>${productData.brand}
                       </li>
                       <li class="list-group-item d-flex">
-                        <strong class="pr-2">Description: </strong>${productData.description}
+                        <strong class="pr-1">Description: </strong>${productData.description}
                       </li>
                       <li class="list-group-item d-flex">
-                        <strong class="pr-2">Price: </strong>£${productData.price}
+                        <strong class="pr-1">Price: </strong>£${productData.price}
                       </li>
                   </ul>
                   <ul class="list-group list-group-flush px-0">
@@ -96,22 +101,26 @@
                         <h5> Server Details</h5>
                       </li>
                       <li class="list-group-item d-flex">
-                        <strong class="pr-2">id: </strong>${productData._id}
+                        <strong class="pr-1">id: </strong>${productData._id}
                       </li>
                       <li class="list-group-item d-flex">
-                        <strong class="pr-2">createdAt: </strong>${productData.createdAt}
+                        <strong class="pr-1">createdAt: </strong>${productData.createdAt}
                       </li>
                       <li class="list-group-item d-flex">
-                        <strong class="pr-2">updatedAt: </strong>${productData.updatedAt}
+                        <strong class="pr-1">updatedAt: </strong>${productData.updatedAt}
                       </li>
                   </ul>
                   `
                 }
-             
+
             } catch (err) {
                 console.log(err)
             }
-        }
+          }
+
+          const handleEdit = () => {
+            window.location.assign("./backoffice.html?id=" + productId)
+          }
 
     </script>
   </body>
